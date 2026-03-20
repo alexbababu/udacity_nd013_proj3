@@ -70,10 +70,6 @@ Eigen::Matrix4d ICP(PointCloudT::Ptr target, PointCloudT::Ptr source, Pose start
 
   	// TODO: Implement the PCL ICP function and return the correct transformation matrix
   	// .....
-<<<<<<< HEAD
-  	
-  	return transformation_matrix;
-=======
   	Eigen::Matrix4d initTransform = transform3D(startingPose.rotation.yaw, startingPose.rotation.pitch, startingPose.rotation.roll, startingPose.position.x, startingPose.position.y, startingPose.position.z);
   	PointCloudT::Ptr transformSource(new PointCloudT);
   	pcl::transformPointCloud(*source,*transformSource,initTransform);
@@ -107,7 +103,6 @@ Eigen::Matrix4d ICP(PointCloudT::Ptr target, PointCloudT::Ptr source, Pose start
 		cout << "WARNING: ICP did not converge" << endl;
 	}
 	return transformation_matrix;
->>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
 
 }
 
@@ -200,11 +195,6 @@ int main(){
 
 	typename pcl::PointCloud<PointT>::Ptr cloudFiltered (new pcl::PointCloud<PointT>);
 
-<<<<<<< HEAD
-	cloudFiltered = scanCloud; // TODO: remove this line
-	//TODO: Create voxel filter for input scan and save to cloudFiltered
-	// ......
-=======
 	//cloudFiltered = scanCloud; // TODO: remove this line
 	//TODO: Create voxel filter for input scan and save to cloudFiltered
 	// ......
@@ -212,7 +202,6 @@ int main(){
 	vg.setInputCloud(scanCloud);
 	vg.setLeafSize(0.5f, 0.5f, 0.5f);
 	vg.filter(*cloudFiltered);
->>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
 
 	PointCloudT::Ptr transformed_scan (new PointCloudT);
 	Tester tester;
@@ -223,11 +212,7 @@ int main(){
 
 		if( matching != Off){
 			if( matching == Icp)
-<<<<<<< HEAD
-				transform = ICP(mapCloud, cloudFiltered, pose, 0); //TODO: change the number of iterations to positive number
-=======
 				transform = ICP(mapCloud, cloudFiltered, pose, 3); //TODO: change the number of iterations to positive number
->>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
   			pose = getPose(transform);
 			if( !tester.Displacement(pose) ){
 				if(matching == Icp)
