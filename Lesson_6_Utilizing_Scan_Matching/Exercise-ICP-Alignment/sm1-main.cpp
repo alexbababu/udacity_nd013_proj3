@@ -70,8 +70,44 @@ Eigen::Matrix4d ICP(PointCloudT::Ptr target, PointCloudT::Ptr source, Pose start
 
   	// TODO: Implement the PCL ICP function and return the correct transformation matrix
   	// .....
+<<<<<<< HEAD
   	
   	return transformation_matrix;
+=======
+  	Eigen::Matrix4d initTransform = transform3D(startingPose.rotation.yaw, startingPose.rotation.pitch, startingPose.rotation.roll, startingPose.position.x, startingPose.position.y, startingPose.position.z);
+  	PointCloudT::Ptr transformSource(new PointCloudT);
+  	pcl::transformPointCloud(*source,*transformSource,initTransform);
+
+	/*
+  	if( count == 0)
+  		renderPointCloud(viewer, transformSource, "transform_scan_"+to_string(count), Color(1,0,1)); // render corrected scan
+  	*/
+	
+	pcl::console::TicToc time;
+	time.tic();
+	pcl::IterativeClosestPoint<PointT, PointT> icp;
+	icp.setMaximumIterations(iterations);
+	icp.setInputSource(transformSource);
+	icp.setInputTarget(target);
+	icp.setMaxCorrespondenceDistance(2);
+	//icp.setTransformationEpsilon(0.001);
+	//icp.setEuclideanFitnessEpsilon(0.05);
+	//icp.setRANSACOutlierRejectionThreshold(10);
+
+	PointCloudT::Ptr Final(new PointCloudT);
+	icp.align(*Final);
+
+	if(icp.hasConverged()){
+		transformation_matrix = icp.getFinalTransformation().cast<double>();
+		transformation_matrix = transformation_matrix * initTransform;
+
+  		return transformation_matrix;
+	}
+	else {
+		cout << "WARNING: ICP did not converge" << endl;
+	}
+	return transformation_matrix;
+>>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
 
 }
 
@@ -164,9 +200,19 @@ int main(){
 
 	typename pcl::PointCloud<PointT>::Ptr cloudFiltered (new pcl::PointCloud<PointT>);
 
+<<<<<<< HEAD
 	cloudFiltered = scanCloud; // TODO: remove this line
 	//TODO: Create voxel filter for input scan and save to cloudFiltered
 	// ......
+=======
+	//cloudFiltered = scanCloud; // TODO: remove this line
+	//TODO: Create voxel filter for input scan and save to cloudFiltered
+	// ......
+	pcl::VoxelGrid<PointT> vg;
+	vg.setInputCloud(scanCloud);
+	vg.setLeafSize(0.5f, 0.5f, 0.5f);
+	vg.filter(*cloudFiltered);
+>>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
 
 	PointCloudT::Ptr transformed_scan (new PointCloudT);
 	Tester tester;
@@ -177,7 +223,11 @@ int main(){
 
 		if( matching != Off){
 			if( matching == Icp)
+<<<<<<< HEAD
 				transform = ICP(mapCloud, cloudFiltered, pose, 0); //TODO: change the number of iterations to positive number
+=======
+				transform = ICP(mapCloud, cloudFiltered, pose, 3); //TODO: change the number of iterations to positive number
+>>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
   			pose = getPose(transform);
 			if( !tester.Displacement(pose) ){
 				if(matching == Icp)

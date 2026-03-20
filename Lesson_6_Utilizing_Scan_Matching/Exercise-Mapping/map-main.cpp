@@ -145,9 +145,15 @@ int main(){
 		if(new_scan){
 			auto scan = boost::static_pointer_cast<csd::LidarMeasurement>(data);
 	
+<<<<<<< HEAD
 			Eigen::Matrix4d transform= Eigen::Matrix4d::Identity ();
 			// TODO: Set transform to pose using transform3D()
 			transform = transform3D(pose.rotation.yaw, pose.rotation.pitch, pose.rotation.roll, pose.position.x, pose.position.y, pose.position.z);
+=======
+			//Eigen::Matrix4d transform= Eigen::Matrix4d::Identity ();
+			// TODO: Set transform to pose using transform3D()
+			Eigen::Matrix4d transform = transform3D(pose.rotation.yaw, pose.rotation.pitch, pose.rotation.roll, pose.position.x, pose.position.y, pose.position.z);
+>>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
 			for (auto detection : *scan){
 				if((detection.x*detection.x + detection.y*detection.y + detection.z*detection.z) > 8.0){ // Don't include points touching ego
 					Eigen::Vector4d local_point(detection.x, detection.y, detection.z, 1);
@@ -224,7 +230,15 @@ int main(){
   	scanCloud->height = 1;
 
 	// TODO: Downsample the map point cloud using a voxel filter
+<<<<<<< HEAD
 
+=======
+	// pcl::VoxelGrid<PointT> vg;
+	// PointCloudT::Ptr filteredCloud(new PointCloudT);
+	// vg.setInputCloud(scanCloud);
+	// vg.setLeafSize(0.5f, 0.5f, 0.5f); 
+	// vg.filter(*filteredCloud);
+>>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
 	pcl::io::savePCDFileASCII ("my_map.pcd", *scanCloud);
 	cout << "saved pcd map" << endl;
 
