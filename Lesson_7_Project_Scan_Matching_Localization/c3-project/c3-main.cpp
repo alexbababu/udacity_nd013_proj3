@@ -234,12 +234,12 @@ int main(){
 			vg.filter(*cloudFiltered);
 			// TODO: Find pose transform by using ICP or NDT matching
 			//pose = ....
-			
-			transform = NDT(ndt, cloudFiltered, pose, 10);
-			pose = getPose(transform);
+			Eigen::Matrix4d ndt_transform;
+			ndt_transform = NDT(ndt, cloudFiltered, pose, 10);
+			pose = getPose(ndt_transform);
 			// TODO: Transform scan so it aligns with ego's actual pose and render that scan
 			PointCloudT::Ptr transformed_scan(new PointCloudT);
-    		pcl::transformPointCloud(*cloudFiltered, *transformed_scan, transform);
+    		pcl::transformPointCloud(*cloudFiltered, *transformed_scan, ndt_transform);
 			viewer->removePointCloud("scan");
 			// TODO: Change `scanCloud` below to your transformed scan
 			renderPointCloud(viewer, transformed_scan, "scan", Color(1,0,0) );
