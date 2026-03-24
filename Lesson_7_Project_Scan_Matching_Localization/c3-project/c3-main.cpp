@@ -99,6 +99,40 @@ void drawCar(Pose pose, int num, Color color, double alpha, pcl::visualization::
 	renderBox(viewer, box, num, color, alpha);
 }
 
+Eigen::Matrix4d ICP(PointCloudT::Ptr target, PointCloudT::Ptr source, Pose startingPose, int iterations){
+
+	// Defining a rotation matrix and translation vector
+  	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity ();
+
+  	Eigen::Matrix4d initTransform = transform3D(startingPose.rotation.yaw, startingPose.rotation.pitch, startingPose.rotation.roll, startingPose.position.x, startingPose.position.y, startingPose.position.z);
+  	PointCloudT::Ptr transformSource (new PointCloudT); 
+  	pcl::transformPointCloud (*source, *transformSource, initTransform);
+	
+	pcl::console::TicToc time;
+  	time.tic ();
+  	pcl::IterativeClosestPoint<PointT, PointT> icp;
+  	icp.setMaximumIterations (iterations);
+  	icp.setInputSource (transformSource);
+  	icp.setInputTarget (target);
+	icp.setMaxCorrespondenceDistance (2);
+
+  	PointCloudT::Ptr cloud_icp (new PointCloudT);  // ICP output point cloud
+  	icp.align (*cloud_icp);
+
+  	if (icp.hasConverged ())
+  	{
+
+  		transformation_matrix = icp.getFinalTransformation ().cast<double>();
+  		transformation_matrix =  transformation_matrix * initTransform;
+
+  		return transformation_matrix;
+  	}
+	else
+  		cout << "WARNING: ICP did not converge" << endl;
+  	return transformation_matrix;
+
+}
+
 Eigen::Matrix4d NDT(pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt, PointCloudT::Ptr source, Pose startingPose, int iterations){
 
 	
@@ -218,18 +252,20 @@ int main(){
 		}
 
   		viewer->spinOnce ();
+		
 		pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
 		ndt.setTransformationEpsilon (.001);
 		ndt.setStepSize (1);
 		ndt.setResolution (5);
 		ndt.setInputTarget (mapCloud);
+		
 		if(!new_scan){
 			
 			new_scan = true;
 			// TODO: (Filter scan using voxel filter)
 			pcl::VoxelGrid<PointT> vg;
 			vg.setInputCloud(scanCloud);
-			double filterRes = 1.0;
+			double filterRes = 0.2;
 			vg.setLeafSize(filterRes, filterRes, filterRes);
 			vg.filter(*cloudFiltered);
 			// TODO: Find pose transform by using ICP or NDT matching
@@ -239,6 +275,10 @@ int main(){
 			Eigen::Matrix4d ndt_transform;
 			ndt_transform = NDT(ndt, cloudFiltered, pose, 100);
 			pose = getPose(ndt_transform);
+
+			// Eigen::Matrix4d icp_transform = ICP(mapCloud, cloudFiltered, pose, 5);
+			// pose = getPose(icp_transform);
+			
 			// TODO: Transform scan so it aligns with ego's actual pose and render that scan
 			PointCloudT::Ptr transformed_scan(new PointCloudT);
     		pcl::transformPointCloud(*cloudFiltered, *transformed_scan, ndt_transform);
