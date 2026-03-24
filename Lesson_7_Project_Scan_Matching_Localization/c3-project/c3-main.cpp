@@ -234,9 +234,22 @@ int main(){
 			vg.filter(*cloudFiltered);
 			// TODO: Find pose transform by using ICP or NDT matching
 			//pose = ....
+
+			Pose globalGuess(
+				Point(pose.position.x + poseRef.position.x, 
+						pose.position.y + poseRef.position.y, 
+						pose.position.z + poseRef.position.z),
+    			Rotate(pose.rotation.yaw + poseRef.rotation.yaw, 
+           			pose.rotation.pitch + poseRef.rotation.pitch, 
+           			pose.rotation.roll + poseRef.rotation.roll)
+			);
 			Eigen::Matrix4d ndt_transform;
-			ndt_transform = NDT(ndt, cloudFiltered, pose + poseRef, 100);
-			pose = getPose(ndt_transform) - poseRef;
+			ndt_transform = NDT(ndt, cloudFiltered, globalGuess, 100);
+			Pose ndt_pose = getPose(ndt_transform);
+			pose = Pose(
+				Point(ndt_pose.position.x - poseRef.position.x, ndt_pose.position.y - poseRef.position.y, ndt_pose.position.z - poseRef.position.z), 
+				Rotate(ndt_pose.rotation.yaw - poseRef.rotation.yaw, ndt_pose.rotation.pitch - poseRef.rotation.pitch, ndt_pose.rotation.roll - poseRef.rotation.roll)
+			)
 			// TODO: Transform scan so it aligns with ego's actual pose and render that scan
 			PointCloudT::Ptr transformed_scan(new PointCloudT);
     		pcl::transformPointCloud(*cloudFiltered, *transformed_scan, ndt_transform);
