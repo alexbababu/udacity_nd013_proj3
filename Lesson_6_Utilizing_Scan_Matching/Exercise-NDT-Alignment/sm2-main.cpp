@@ -64,15 +64,6 @@ void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event, void*
 
 }
 
-<<<<<<< HEAD
-Eigen::Matrix4d NDT(pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt, PointCloudT::Ptr source, Pose startingPose, int iterations){
-
-  	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity ();
-
-  	// TODO: Implement the PCL NDT function and return the correct transformation matrix
-  	// .....
-  	
-=======
 
 Eigen::Matrix4d NDT(pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt, PointCloudT::Ptr source, Pose startingPose, int iterations){
 
@@ -80,7 +71,8 @@ Eigen::Matrix4d NDT(pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointX
 
   	// TODO: Implement the PCL NDT function and return the correct transformation matrix
   	// .....
-	Eigen::Matrix4f initGuess = transform3D(startingPose.rotation.yaw, startingPose.rotation.pitch, startingPose.rotation.roll, startingPose.position.x, startingPose.position.y, startingPose.position.z).cast<float>();
+	Eigen::Matrix4f initGuess = transform3D(startingPose.rotation.yaw, startingPose.rotation.pitch, startingPose.rotation.roll, 
+		startingPose.position.x, startingPose.position.y, startingPose.position.z).cast<float>();
 
 	pcl::console::TicToc time;
 	time.tic();
@@ -91,7 +83,6 @@ Eigen::Matrix4d NDT(pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointX
 	
 	Eigen::Matrix4d transformation_matrix = ndt.getFinalTransformation().cast<double>();
 		  	
->>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
   	return transformation_matrix;
 
 }
@@ -185,11 +176,6 @@ int main(){
 
 	typename pcl::PointCloud<PointT>::Ptr cloudFiltered (new pcl::PointCloud<PointT>);
 
-<<<<<<< HEAD
-	cloudFiltered = scanCloud; // TODO: remove this line
-	//TODO: Create voxel filter for input scan and save to cloudFiltered
-	// ......
-=======
 	//cloudFiltered = scanCloud; // TODO: remove this line
 	//TODO: Create voxel filter for input scan and save to cloudFiltered
 	// ......
@@ -197,18 +183,14 @@ int main(){
 	vg.setInputCloud(scanCloud);
 	vg.setLeafSize(0.5f, 0.5f, 0.5f);
 	vg.filter(*cloudFiltered);
->>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
 
 	pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
 	//TODO: Set resolution and point cloud target (map) for ndt
 	// ......
-<<<<<<< HEAD
-=======
 	ndt.setTransformationEpsilon(0.0001);
 	ndt.setInputTarget(mapCloud);
-	ndt.setResolution(1);
+	ndt.setResolution(3.0);
 	ndt.setStepSize(1);
->>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
 
 	PointCloudT::Ptr transformed_scan (new PointCloudT);
 	Tester tester;
@@ -219,11 +201,7 @@ int main(){
 
 		if( matching != Off){
 			if( matching == Ndt)
-<<<<<<< HEAD
-				transform = NDT(ndt, cloudFiltered, pose, 0); //TODO: change the number of iterations to positive number
-=======
 				transform = NDT(ndt, cloudFiltered, pose, 3); //TODO: change the number of iterations to positive number
->>>>>>> b68b0fbb3d9e0478e56b9735f126d9d41cf657c4
   			pose = getPose(transform);
 			if( !tester.Displacement(pose) ){
 				if(matching == Ndt)

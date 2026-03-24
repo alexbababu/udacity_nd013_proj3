@@ -220,9 +220,9 @@ int main(){
 
   		viewer->spinOnce ();
 		pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
-		ndt.setTransformationEpsilon (.0001);
-		ndt.setStepSize (0.1);
-		ndt.setResolution (1);
+		ndt.setTransformationEpsilon (.0011);
+		//ndt.setStepSize (1);
+		ndt.setResolution (5);
 		ndt.setInputTarget (mapCloud);
 		if(!new_scan){
 			
@@ -235,7 +235,7 @@ int main(){
 			// TODO: Find pose transform by using ICP or NDT matching
 			//pose = ....
 			Eigen::Matrix4d ndt_transform;
-			ndt_transform = NDT(ndt, cloudFiltered, pose, 10);
+			ndt_transform = NDT(ndt, cloudFiltered, pose, 3);
 			pose = getPose(ndt_transform);
 			// TODO: Transform scan so it aligns with ego's actual pose and render that scan
 			PointCloudT::Ptr transformed_scan(new PointCloudT);
