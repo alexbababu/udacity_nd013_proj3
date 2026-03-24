@@ -221,7 +221,7 @@ int main(){
   		viewer->spinOnce ();
 		pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ> ndt;
 		ndt.setTransformationEpsilon (.001);
-		//ndt.setStepSize (1);
+		ndt.setStepSize (1);
 		ndt.setResolution (5);
 		ndt.setInputTarget (mapCloud);
 		if(!new_scan){
